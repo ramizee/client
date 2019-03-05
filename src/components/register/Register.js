@@ -5,7 +5,6 @@ import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
-
 const FormContainer = styled.div`
   margin-top: 2em;
   display: flex;
@@ -14,7 +13,6 @@ const FormContainer = styled.div`
   min-height: 300px;
   justify-content: center;
 `;
-
 const Form = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,7 +27,6 @@ const Form = styled.div`
   background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
   transition: opacity 0.5s ease, transform 0.5s ease;
 `;
-
 const InputField = styled.input`
   &::placeholder {
     color: rgba(255, 255, 255, 0.2);
@@ -43,19 +40,16 @@ const InputField = styled.input`
   background: rgba(255, 255, 255, 0.2);
   color: white;
 `;
-
 const Label = styled.label`
   color: white;
   margin-bottom: 10px;
   text-transform: uppercase;
 `;
-
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
 `;
-
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
  * You should have a class (instead of a functional component) when:
@@ -65,7 +59,7 @@ const ButtonContainer = styled.div`
  * https://reactjs.org/docs/react-component.html
  * @Class
  */
-class Login extends React.Component {
+class Register extends React.Component {
   /**
    * If you don’t initialize the state and you don’t bind methods, you don’t need to implement a constructor for your React component.
    * The constructor for a React component is called before it is mounted (rendered).
@@ -76,43 +70,52 @@ class Login extends React.Component {
     super();
     this.state = {
       password: null,
-      username: null
+      username: null,
+      name: null,
+      birthday: null
     };
   }
   /**
    * HTTP POST request is sent to the backend.
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
-  login() {
+  register() {
     fetch(`${getDomain()}/users`, {
-      method: "POST",
+        method: "POST",
       headers: {
-        "Content-Type": "application/json"
+      "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        name: this.state.name,
         username: this.state.username,
+        birthday: this.state.birthday,
         password: this.state.password
       })
     })
-      .then(response => response.json())
-      .then(returnedUser => {
-        const user = new User(returnedUser);
-        // store the token into the local storage
-        localStorage.setItem("token", user.token);
-        // user login successfully worked --> navigate to the route /game in the GameRouter
-        this.props.history.push(`/game`);
-      })
-      .catch(err => {
-        if (err.message.match(/Failed to fetch/)) {
-          alert("The server cannot be reached. Did you start it?");
-        } else {
-          alert(`Something went wrong during the login: ${err.message}`);
+    .then(async res => {
+        if (!res.ok) {
+          const error = await res.json();
+          alert(error.message);
+          this.setState({name: null});
+          this.setState({username: null});
+          this.setState({birthday: null});
+          this.setState({password: null});
+          this.setState({repeatedPassword: null});
+        }else{
+          this.props.history.push(`/login`);
         }
-      });
-  }
+      })
+        .catch(err => {
+          if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+          } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+          }
+        });
+    }
 
-  register(){
-    this.props.history.push("/register");
+  login(){
+    this.props.history.push("/login");
   }
   /**
    *  Every time the user enters something in the input field, the state gets updated.
@@ -124,7 +127,6 @@ class Login extends React.Component {
     // this.setState({'username': value});
     this.setState({ [key]: value });
   }
-
   /**
    * componentDidMount() is invoked immediately after a component is mounted (inserted into the tree).
    * Initialization that requires DOM nodes should go here.
@@ -133,8 +135,6 @@ class Login extends React.Component {
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
   componentDidMount() {}
-
-
   render() {
     return (
       <BaseContainer>
@@ -155,19 +155,23 @@ class Login extends React.Component {
                 this.handleInputChange("password", e.target.value);
               }}
             />
+            <Label>Name</Label>
+            <InputField
+              placeholder="Enter here.."
+              onChange={e => {
+                this.handleInputChange("name", e.target.value);
+              }}
+            />
+            <Label>Birthday</Label>
+            <InputField
+              placeholder="Tag.Monat.Jahr"
+              onChange={e => {
+                this.handleInputChange("birthday", e.target.value);
+              }}
+            />
             <ButtonContainer>
               <Button
-                disabled={!this.state.username || !this.state.password}
-                width="50%"
-                onClick={() => {
-                  this.login();
-                }}
-              >
-                Login
-              </Button>
-            </ButtonContainer>
-            <ButtonContainer>
-              <Button
+                disabled={!this.state.username || !this.state.password || !this.state.name || !this.state.birthday}
                 width="50%"
                 onClick={() => {
                   this.register();
@@ -182,9 +186,8 @@ class Login extends React.Component {
     );
   }
 }
-
 /**
  * You can get access to the history object's properties via the withRouter.
  * withRouter will pass updated match, location, and history props to the wrapped component whenever it renders.
  */
-export default withRouter(Login);
+export default withRouter(Register);
