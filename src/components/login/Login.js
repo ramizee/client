@@ -5,6 +5,7 @@ import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
+import "./Login.css"
 
 const FormContainer = styled.div`
   margin-top: 2em;
@@ -75,10 +76,10 @@ class Login extends React.Component {
   constructor() {
     super();
     this.state = {
-      password: null,
       username: null,
+      password: null,
       userList: null,
-      wrong_input: false
+      notFound: false
     };
   }
   /**
@@ -86,7 +87,7 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
-    //hier anderst machen
+    //hier anderst machen, frag Aline
     fetch(`${getDomain()}/users`, {
       method: "POST",
       headers: {
@@ -159,7 +160,7 @@ class Login extends React.Component {
       <BaseContainer>
         <FormContainer>
           <Form>
-            {this.state.wrong_input ? (
+            {this.state.notFound ? (
               <p className="WrongLogin">
                 Wrong username or passwort
               </p>

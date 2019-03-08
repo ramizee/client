@@ -72,7 +72,8 @@ class Game extends React.Component {
             <Users>
               {this.state.users.map(user => {
                 return (
-                  <PlayerContainer key={user.id} onClick={() => {
+                  <PlayerContainer
+                    key={user.id} onClick={() => {
                     this.props.history.push(`/profile/${user.id}`);
                   }}
                   >

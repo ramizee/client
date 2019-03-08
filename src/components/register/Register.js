@@ -5,6 +5,7 @@ import { getDomain } from "../../helpers/getDomain";
 //import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
+import "./Register.css"
 
 const FormContainer = styled.div`
   margin-top: 2em;
@@ -74,9 +75,8 @@ class Register extends React.Component {
       username: null,
       name: null,
       birthday: null,
-      //Fragen wo braucht man diese
+      exist: false,
       userList: null,
-      already_used: false
     };
   }
   /**
@@ -171,11 +171,19 @@ class Register extends React.Component {
       <BaseContainer>
         <FormContainer>
           <Form>
-            {this.state.wrong_input ? (
-              <p className="WrongLogin">
+            {this.state.exist ? (
+              <p className="UsernameWarningMessage">
+                Username not available!
+              </p>
+            ) :null}
+
+
+            {this.state.exist ? (
+              <p className="UsernameTaken">
                 Username already taken
               </p>
             ):null}
+
             <Label>Username</Label>
                         <InputField
               placeholder="Enter here.."

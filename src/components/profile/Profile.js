@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
+import Player from "../../views/Player";
+import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 
@@ -10,18 +12,38 @@ const Container = styled(BaseContainer)`
   text-align: left;
 `;
 
+const InputField = styled.input`
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
+  height: 35px;
+  padding-left: 15px;
+  margin-left: -4px;
+  border: none;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+`;
+
+const Label = styled.label`
+  color: white;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+`;
+
 class Profile extends React.Component {
   constructor() {
     super();
     this.state = {
+      name: null,
       username: null,
-      status: null,
-      creationDate: null,
-      birthday: null
+      password: null,
+      creationDate: null
     };
   }
 
-  getBack() {
+  return() {
     this.props.history.push("/game");
   }
 
