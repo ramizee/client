@@ -102,7 +102,7 @@ class Login extends React.Component {
         const user = new User(returnedUser);
         // store the token into the local storage
         localStorage.setItem("token", user.token);
-        // user login successfully worked --> navigate to the route /game in the GameRouter
+        // user Login successfully worked --> navigate to the route /game in the GameRouter
         this.props.history.push(`/game`);
       })
       .catch(err => {
@@ -155,17 +155,15 @@ class Login extends React.Component {
 
 
   render() {
-    //Fragen wegen style
-    const style={
-      display: this.state.wrong_input ? '' : 'none',
-      color: 'darked'
-    };
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
-            <p style={style}>
-              Invalid username or password</p>
+            {this.state.wrong_input ? (
+              <p className="WrongLogin">
+                Wrong username or passwort
+              </p>
+            ):null}
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."

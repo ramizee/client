@@ -84,32 +84,40 @@ class Register extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   register() {
-    //fragen wieso anderst wie bei login
-    fetch(`${getDomain()}/users`, {
+    const usernameList = this.state.userList.map(p => p.username);
+    if (usernameList.includes(this.state.username)) {
+      this.setState({exist: true});
+      this.props.history.push(`/register`);
+      console.log("username already in list");
+    }
+    else {
+      console.log("does it work?");
+      //this.props.history.push(`/Login`);
+      fetch(`${getDomain()}/users`, {
         method: "POST",
-      headers: {
-      "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: this.state.name,
-        username: this.state.username,
-        birthday: this.state.birthday,
-        password: this.state.password
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: this.state.name,
+          username: this.state.username,
+          password: this.state.password,
+          birthday: this.state.birthday
+        })
       })
-    })
-    .then(async res => {
-        if (!res.ok) {
-          const error = await res.json();
-          alert(error.message);
-          this.setState({name: null});
-          this.setState({username: null});
-          this.setState({birthday: null});
-          this.setState({password: null});
-          this.setState({repeatedPassword: null});
-        }else{
-          this.props.history.push(`/login`);
-        }
-      })
+        .then(async res=>{
+          if (!res.ok) {
+            const error = await res.json();
+            alert(error.message);
+            this.setState({name: null});
+            this.setState({username: null});
+            this.setState({password: null});
+            this.setState({birthday: null});
+            this.setState({repeatedPassword: null});
+          } else{
+            this.props.history.push('/Login')
+          }
+        })
         .catch(err => {
           if (err.message.match(/Failed to fetch/)) {
             alert("The server cannot be reached. Did you start it?");
@@ -118,6 +126,7 @@ class Register extends React.Component {
           }
         });
     }
+  }
 
   return(){ //go back to the site of login
     this.props.history.push("/login");
@@ -158,18 +167,17 @@ class Register extends React.Component {
   }
 
   render() {
-    const style = {
-      display: this.state.already_used ? '' : 'none',
-      color: 'darkred'
-    };
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
+            {this.state.wrong_input ? (
+              <p className="WrongLogin">
+                Username already taken
+              </p>
+            ):null}
             <Label>Username</Label>
-            <p style={style}>
-              Username already taken </p>
-            <InputField
+                        <InputField
               placeholder="Enter here.."
               onChange={e => {
                 this.handleInputChange("username", e.target.value);
