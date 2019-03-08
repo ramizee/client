@@ -87,32 +87,22 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
-    //hier anderst machen, frag Aline
-    fetch(`${getDomain()}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: this.state.username,
-        password: this.state.password
-      })
-    })
-      .then(response => response.json())
-      .then(returnedUser => {
-        const user = new User(returnedUser);
-        // store the token into the local storage
-        localStorage.setItem("token", user.token);
-        // user Login successfully worked --> navigate to the route /game in the GameRouter
-        this.props.history.push(`/game`);
-      })
-      .catch(err => {
-        if (err.message.match(/Failed to fetch/)) {
-          alert("The server cannot be reached. Did you start it?");
-        } else {
-          alert(`Something went wrong during the login: ${err.message}`);
-        }
-      });
+    const found = this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password) != null;
+    //const found = true;
+    if (found) {
+      const user = new User(this.userList);
+      // store the token into the local storage
+      localStorage.setItem("token", user.token);
+      // user login successfully worked --> navigate to the route /game in the GameRouter
+      console.log("(*) Login done User known!");
+      console.log(user);
+      this.props.history.push(`/game`);
+    } else {
+      console.log("(*) Login done User unknown");
+      //this.setState({notFound: true});
+      this.props.history.push(`/login`);
+      console.log("hi");
+    }
   }
 
   register(){

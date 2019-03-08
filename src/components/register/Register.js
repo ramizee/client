@@ -171,12 +171,6 @@ class Register extends React.Component {
       <BaseContainer>
         <FormContainer>
           <Form>
-            {this.state.exist ? (
-              <p className="UsernameWarningMessage">
-                Username not available!
-              </p>
-            ) :null}
-
 
             {this.state.exist ? (
               <p className="UsernameTaken">
