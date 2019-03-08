@@ -76,7 +76,9 @@ class Login extends React.Component {
     super();
     this.state = {
       password: null,
-      username: null
+      username: null,
+      userList: null,
+      wrong_input: false
     };
   }
   /**
@@ -84,6 +86,7 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
+    //hier anderst machen
     fetch(`${getDomain()}/users`, {
       method: "POST",
       headers: {
@@ -132,14 +135,37 @@ class Login extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {}
+  componentDidMount() {
+    //Fragen wieso so
+    fetch(`${getDomain()}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => response.json())
+      .then(users => {
+        this.setState({ userList: users });
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
+  }
 
 
   render() {
+    //Fragen wegen style
+    const style={
+      display: this.state.wrong_input ? '' : 'none',
+      color: 'darked'
+    };
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
+            <p style={style}>
+              Invalid username or password</p>
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."

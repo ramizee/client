@@ -2,9 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import User from "../shared/models/User";
+//import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
+
 const FormContainer = styled.div`
   margin-top: 2em;
   display: flex;
@@ -18,7 +19,7 @@ const Form = styled.div`
   flex-direction: column;
   justify-content: center;
   width: 60%;
-  height: 375px;
+  height: 500px;
   font-size: 16px;
   font-weight: 300;
   padding-left: 37px;
@@ -72,7 +73,10 @@ class Register extends React.Component {
       password: null,
       username: null,
       name: null,
-      birthday: null
+      birthday: null,
+      //Fragen wo braucht man diese
+      userList: null,
+      already_used: false
     };
   }
   /**
@@ -80,6 +84,7 @@ class Register extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   register() {
+    //fragen wieso anderst wie bei login
     fetch(`${getDomain()}/users`, {
         method: "POST",
       headers: {
@@ -114,7 +119,7 @@ class Register extends React.Component {
         });
     }
 
-  login(){
+  return(){ //go back to the site of login
     this.props.history.push("/login");
   }
   /**
@@ -134,13 +139,36 @@ class Register extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {}
+  componentDidMount() {
+    //Fragen wieso
+    fetch(`${getDomain()}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => response.json())
+      .then(users => {
+        this.setState({ userList: users });
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
+  }
+
   render() {
+    const style = {
+      display: this.state.already_used ? '' : 'none',
+      color: 'darkred'
+    };
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
             <Label>Username</Label>
+            <p style={style}>
+              Username already taken </p>
             <InputField
               placeholder="Enter here.."
               onChange={e => {
@@ -164,6 +192,7 @@ class Register extends React.Component {
             />
             <Label>Birthday</Label>
             <InputField
+              // Fragen wegen Datum
               placeholder="Tag.Monat.Jahr"
               onChange={e => {
                 this.handleInputChange("birthday", e.target.value);
@@ -178,6 +207,16 @@ class Register extends React.Component {
                 }}
               >
                 Register
+              </Button>
+            </ButtonContainer>
+            <ButtonContainer>
+              <Button
+                width="50%"
+                onClick={() => {
+                this.return();
+                }}
+            >
+                Back
               </Button>
             </ButtonContainer>
           </Form>
