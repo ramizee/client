@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-//import Player from "../../views/Player";
-//import { Spinner } from "../../views/design/Spinner";
+import Player from "../../views/Player";
+import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 
@@ -39,8 +39,7 @@ class Profile extends React.Component {
       name: null,
       username: null,
       password: null,
-      creationDate: null,
-      birthday: null
+      creationDate: null
     };
   }
 
