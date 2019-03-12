@@ -2,8 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-//import Player from "../../views/Player";
-//import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 
@@ -12,24 +10,10 @@ const Container = styled(BaseContainer)`
   text-align: left;
 `;
 
-const InputField = styled.input`
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
-  }
-  height: 35px;
-  padding-left: 15px;
-  margin-left: -4px;
-  border: none;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-`;
-
-const Label = styled.label`
-  color: white;
-  margin-bottom: 10px;
-  text-transform: uppercase;
+const ButtonContainer = styled.div`
+display: flex;
+justify-content: center;
+margin-top: 20px;
 `;
 
 class Profile extends React.Component {
@@ -38,14 +22,19 @@ class Profile extends React.Component {
     this.state = {
       name: null,
       username: null,
-      password: null,
+      status: null,
       creationDate: null,
-      birthday: null
+      birthday: null,
+      mine: null
     };
   }
 
   return() {
     this.props.history.push("/game");
+  }
+
+  change() {
+    this.props.history.push(`/profile/${this.props.match.params.id}/change`);
   }
 
   componentDidMount() {
@@ -61,6 +50,7 @@ class Profile extends React.Component {
         this.setState({status: user.status});
         this.setState({creationDate: user.creationDate});
         this.setState({birthday: user.birthday});
+        this.setState({mine: user.token === localStorage.getItem("token")})
       })
       .catch(err => {
         console.log(err);
@@ -90,14 +80,25 @@ class Profile extends React.Component {
             <th>{this.state.birthday}</th>
           </tr>
         </table>
-        <Button
-          width="100%"
-          onClick={() => {
-            this.getBack();
-          }}
-        >
-          Go back
-        </Button>
+        <ButtonContainer>
+          <Button
+            width="40%"
+            onClick={() => {
+              this.return();
+            }}
+          >
+            Go back
+          </Button>
+
+          <Button
+            width="40%"
+            onClick={() => {
+              this.change();
+            }}
+          >
+            Change
+          </Button>
+        </ButtonContainer>
       </Container>
     );
   }
