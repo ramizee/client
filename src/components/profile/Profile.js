@@ -4,6 +4,7 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
+import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -20,12 +21,11 @@ class Profile extends React.Component {
   constructor() {
     super();
     this.state = {
-      name: null,
       username: null,
       status: null,
       creationDate: null,
       birthday: null,
-      mine: null
+      mine: false
     };
   }
 
@@ -34,7 +34,7 @@ class Profile extends React.Component {
   }
 
   change() {
-    this.props.history.push(`/profile/${this.props.match.params.id}/change`);
+    this.props.history.push(`/profile/change`);
   }
 
   componentDidMount() {
@@ -91,13 +91,17 @@ class Profile extends React.Component {
           </Button>
 
           <Button
+            //show the button only if you are loged in with
+            disabled={!this.state.mine}
             width="40%"
             onClick={() => {
               this.change();
             }}
           >
             Change
+
           </Button>
+
         </ButtonContainer>
       </Container>
     );

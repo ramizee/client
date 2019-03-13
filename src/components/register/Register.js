@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-//import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
 import "./Register.css"
@@ -77,6 +76,7 @@ class Register extends React.Component {
       birthday: null,
       exist: false,
       userList: null,
+      creationDate: null
     };
   }
   /**
@@ -102,7 +102,8 @@ class Register extends React.Component {
           name: this.state.name,
           username: this.state.username,
           password: this.state.password,
-          birthday: this.state.birthday
+          birthday: this.state.birthday,
+          creationDate: this.getDate()
         })
       })
         .then(async res=>{
@@ -113,9 +114,8 @@ class Register extends React.Component {
             this.setState({username: null});
             this.setState({password: null});
             this.setState({birthday: null});
-            this.setState({repeatedPassword: null});
           } else{
-            this.props.history.push('/Login')
+            this.props.history.push('/login')
           }
         })
         .catch(err => {
@@ -149,7 +149,6 @@ class Register extends React.Component {
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
   componentDidMount() {
-    //Fragen wieso
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
@@ -202,8 +201,7 @@ class Register extends React.Component {
             />
             <Label>Birthday</Label>
             <InputField
-              // Fragen wegen Datum
-              placeholder="Tag.Monat.Jahr"
+              placeholder="dd.mm.yyyy"
               onChange={e => {
                 this.handleInputChange("birthday", e.target.value);
               }}

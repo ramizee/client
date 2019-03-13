@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
+import User from "../shared/models/User";
 import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
@@ -34,8 +35,27 @@ class Game extends React.Component {
   }
 
   logout() {
-    localStorage.removeItem("token");
-    this.props.history.push("/login");
+    fetch(`${getDomain()}/logout/${localStorage.getItem("user_id")}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then(response => response.json())
+      .then(res => {
+        if (res.error) {
+          alert(res.message);
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_id")
+          console.log("logging out")
+          this.props.history.push("/login");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
   }
 
   componentDidMount() {
@@ -74,7 +94,7 @@ class Game extends React.Component {
                 return (
                   <PlayerContainer
                     key={user.id} onClick={() => {
-                    this.props.history.push(`/profile/${user.id}`);
+                    this.props.history.push(`/profile/${user.id}/show`);
                   }}
                   >
                     <Player user={user} />

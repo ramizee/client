@@ -4,6 +4,7 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
+import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -43,7 +44,7 @@ const Form = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 60%;
+  width: 200%;
   height: 500px;
   font-size: 16px;
   font-weight: 300;
@@ -66,50 +67,78 @@ class Change extends React.Component {
     this.state = {
       username: null,
       birthday: null,
-      creationDate: null,
       newUsername: null,
-      usernameEdit: null,
-      status: null,
       newBirthday: null,
-      mine: false
+      userList: null
     };
   }
 
-  return() {
-    this.props.history.push("/profile");
+  handleInputChange(key, value) {
+    this.setState({username: value });
+    this.setState({birthday: value });
+    //this.setState({ [key]: value });
   }
 
-  handleInputChange(value) {
-    this.setState({ newUsername: value });
-  }
-
-  handleChange(key) {
+  /*handleChange(key) {
     return e => {
       this.setState({[key]: e.target.value});
     };
+  }*/
+
+  save() {
+    // TODO: check changed username and put on server
+    const usernameList = this.state.userList.map(p => p.username);
+    if (usernameList.includes(this.state.username)) {
+      this.setState({exist: true});
+      this.props.history.push(`/profile/change`);
+      console.log("username already in list");
+    }
+    else {
+      //this.props.history.push(`/Login`);
+      fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: this.state.username,
+          birthday: this.state.birthday
+        })
+      })
+        .then(response => response.json())
+        .then( res=>{
+          if (res.error) {
+            alert(res.message);
+            this.setState({username: null});
+            this.setState({birthday: null});
+          } else{
+            this.props.history.push('/game')
+          }
+        })
+        .catch(err => {
+          if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+          } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+          }
+        });
+    }
   }
 
-  change() {
-    // TODO: check changed username and put on server
-    this.props.history.push(`/profile/${this.props.match.params.id}`);
+  return(){ //go back to the site of game when we dont want to change
+    this.props.history.push(`/game`);
   }
 
   componentDidMount() {
-    fetch(`${getDomain()}/users/${this.props.match.params.id}`, {
+    fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
       }
     })
       .then(response => response.json())
-      .then( user => {
-        this.setState({mine: user.token === localStorage.getItem("token")});
-        if (this.state.mine){
-          this.setState({name: user.name});
-          this.setState({username: user.username});
-          this.setState({password: user.password});
-          this.setState({birthday: user.birthday});
-        }
+      .then(users => {
+        this.setState({ userList: users });
       })
       .catch(err => {
         console.log(err);
@@ -118,100 +147,50 @@ class Change extends React.Component {
   }
 
   render() {
-    if (this.state.mine) {
-      let usernameRender;
-      if (this.state.usernameEdit) {
-        usernameRender = <div>
-          <td>
+    return (
+      <BaseContainer>
+        <FormContainer>
+          <Form>
+            <Label>New Username</Label>
             <InputField
-              placeholder="Enter here.."
+              placeholder="Enter your new username here.."
               onChange={e => {
-                this.handleInputChange(e.target.value);
+                this.handleInputChange("username", e.target.value);
               }}
             />
-            <Button
-              width="50px"
-              onClick={() => {
-                this.setState({usernameEdit: false});
-              }}
-            >
-              Back
-            </Button>
-          </td>
-        </div>
-      } else {
-        usernameRender = <div>
-          <td>
-            {this.state.username}
-            <Button
-              width="50px"
-              onClick={() => {
-                this.setState({usernameEdit: true});
-              }}
-            >
-              New
-            </Button>
-          </td>
-        </div>
-      }
-      //Birthday
-      return <Container>
-        <h2>Profile of {this.state.username} </h2>
-        <table
-          width="300px"
-        >
-          <tbody>
-          <tr>
-            <td>username:</td>
-            {usernameRender}
-          </tr>
-          <tr>
-            <td>birthday:</td>
 
-          </tr>
-          </tbody>
-          <tfoot>
-          <tr>
-          </tr>
-          </tfoot>
-        </table>
-        <ButtonContainer>
-          <Button
-            width="100%"
-            onClick={() => {
-              this.change();
-            }}
-          >
-            Change
-          </Button>
-        </ButtonContainer>
-        <ButtonContainer>
-          <Button
-            width="100%"
-            onClick={() => {
-              this.props.history.push(`/profile/${this.props.match.params.id}`);
-            }}
-          >
-            Go back
-          </Button>
-        </ButtonContainer>
-      </Container>;
-    } else {
-      return <Container>
-        <h2>This is not your Profile!</h2>
-        <h3>You can only edit your own profile!</h3>
-        <ButtonContainer>
-          <Button
-            width="100%"
-            onClick={() => {
-              this.props.history.push(`/profile/${this.props.match.params.id}`);
-            }}
-          >
-            Go back
-          </Button>
-        </ButtonContainer>
-      </Container>
-    }
+            <Label>New Birthday</Label>
+            <InputField
+              placeholder="Enter your new birthday here.."
+              onChange={e => {
+                this.handleInputChange("birthday", e.target.value);
+              }}
+            />
+            <ButtonContainer>
+              <Button
+                disabled={!this.state.username || !this.state.birthday}
+                width="50%"
+                onClick={() => {
+                  this.save();
+                }}
+              >
+                Save
+              </Button>
+            </ButtonContainer>
+            <ButtonContainer>
+              <Button
+                width="50%"
+                onClick={() => {
+                  this.return();
+                }}
+              >
+                Back
+              </Button>
+            </ButtonContainer>
+          </Form>
+        </FormContainer>
+      </BaseContainer>
+    );
   }
 }
 

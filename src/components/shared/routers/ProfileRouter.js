@@ -16,23 +16,17 @@ class ProfileRouter extends React.Component {
      */
     return (
       <Container>
-        <Route
-          exact
-          path={`${this.props.base}/:id`}
-          render={() => <Profile />}
-        />
 
         <Route
           exact
-          path={`${this.props.base}/:id/change`}
+          path={`${this.props.base}/change`}
           render={() => <Change />}
         />
 
         <Route
           exact
-          path={`${this.props.base}`}
-          // wieso am Schluss eine 1
-          render={() => <Redirect to={`${this.props.base}/1`} />}
+          path={`${this.props.base}/:id/show` }
+          render={() => <Profile />}
         />
       </Container>
     );

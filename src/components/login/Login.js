@@ -76,6 +76,7 @@ class Login extends React.Component {
   constructor() {
     super();
     this.state = {
+      token: null,
       username: null,
       password: null,
       userList: null,
@@ -87,22 +88,39 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
-    const found = this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password) != null;
-    //const found = true;
-    if (found) {
-      const user = new User(this.userList);
-      // store the token into the local storage
-      localStorage.setItem("token", user.token);
-      // user login successfully worked --> navigate to the route /game in the GameRouter
-      console.log("(*) Login done User known!");
-      console.log(user);
-      this.props.history.push(`/game`);
-    } else {
-      console.log("(*) Login done User unknown");
-      this.setState({notFound: true});
-      this.props.history.push(`/login`);
-      console.log("hi");
-    }
+    fetch(`${getDomain()}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: this.state.username,
+        password: this.state.password
+      })
+    })
+      .then(response => response.json())
+      .then(res => {
+        if (res.error) {
+          alert(res.message);
+          //console.log("res not ok!");
+          this.props.history.push('/login')
+        } else {
+          console.log(res);
+          const user = new User(res);
+          console.log(user);
+          localStorage.setItem("token", user.token);
+          localStorage.setItem("user_id", user.id);
+          this.props.history.push('/login')
+        }
+      })
+      .catch(err => {
+        //console.log("nope");
+        if (err.message.match(/Failed to fetch/)) {
+          alert("The server cannot be reached. Did you start it?");
+        } else {
+          alert(`Something went wrong during the login: ${err.message}`);
+        }
+      });
   }
 
   register(){
@@ -127,7 +145,6 @@ class Login extends React.Component {
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
   componentDidMount() {
-    //Fragen wieso so
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
@@ -152,7 +169,7 @@ class Login extends React.Component {
           <Form>
             {this.state.notFound ? (
               <p className="WrongLogin">
-                Wrong username or passwort
+                Wrong username or password
               </p>
             ):null}
             <Label>Username</Label>
