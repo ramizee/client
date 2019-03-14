@@ -4,7 +4,6 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
-import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -67,8 +66,7 @@ class Change extends React.Component {
     this.state = {
       username: null,
       birthday: null,
-      userList: null,
-      exist: false
+      userList: null
     };
   }
 
@@ -76,25 +74,10 @@ class Change extends React.Component {
     this.setState({ [key]: value });
   }
 
-  /*handleChange(key) {
-    return e => {
-      this.setState({[key]: e.target.value});
-    };
-  }*/
 
   saveusername() {
     // TODO: check changed username and put on server
-    const usernameList = this.state.userList.map(p => p.username);
-    //brauchen userList damit wenn wir den username ändern nicht ein username nehmen der existiert
-    if (usernameList.includes(this.state.username)) {
-      this.setState({exist: true});
-      //man bleibt auf change Seite da es denn username nicht akzeptiert
-      this.props.history.push(`/profile/change`);
-      console.log("username already in list");
-    }
-    else {
-      //sonst übernimmt es die Änderung
-      fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
+    fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
@@ -108,8 +91,8 @@ class Change extends React.Component {
           if (res.error) {
             alert(res.message);
             this.setState({username: null});
-          } else { //nach speichern der Änderung geht man zu game Seite
-            this.props.history.push('/game')
+          } else { //nach speichern der Änderung geht man zu profile Seite
+            this.props.history.push(`/profile/${localStorage.getItem("user_id")}/show`)
           }
         })
         .catch(err => {
@@ -120,11 +103,10 @@ class Change extends React.Component {
           }
         });
     }
-    }
 
 
     savebirthday() {
-      // TODO: check changed username and put on server
+      // TODO: check changed birthday and put on server
       fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
           method: "PUT",
           headers: {
@@ -139,8 +121,8 @@ class Change extends React.Component {
             if (res.error) {
               alert(res.message);
               this.setState({birthday: null});
-            } else{ //nach speichern der Änderung geht man zu game Seite
-              this.props.history.push('/game')
+            } else{ //nach speichern der Änderung geht man zu profile Seite
+              this.props.history.push(`/profile/${localStorage.getItem("user_id")}/show`)
             }
           })
           .catch(err => {

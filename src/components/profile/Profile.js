@@ -4,7 +4,6 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
-import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -91,7 +90,7 @@ class Profile extends React.Component {
           </Button>
 
           <Button
-            //show the button only if you are loged in with the current username and change smth just by this username profile
+            //show the button only if you are logged in with the current username and change smth just by this username profile
             disabled={!this.state.mine}
             width="40%"
             onClick={() => {

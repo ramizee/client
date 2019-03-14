@@ -25,6 +25,7 @@ class AppRouter extends React.Component {
             <Route
               path="/game"
               render={() => (
+                //geht zu Gamerouter
                 <GameGuard>
                   <GameRouter base={"/game"} />
                 </GameGuard>
@@ -34,6 +35,8 @@ class AppRouter extends React.Component {
             <Route
               path="/profile"
               render={() => (
+                //kein exact also nach profile hat es noch mehr links und wird weiter geleitet
+                //geht zu ProfileRouter, also Weiterleitungen
                 <GameGuard>
                   <ProfileRouter base={"/profile"} />
                 </GameGuard>
@@ -42,7 +45,7 @@ class AppRouter extends React.Component {
 
             <Route
               path="/login"
-              exact
+              exact //nur der link existiert
               render={() => (
                 <LoginGuard>
                   <Login />
@@ -54,6 +57,7 @@ class AppRouter extends React.Component {
               path="/register"
               exact
               render={() => (
+                //geht zu Loginguard, wenn Item dann geht zu login Seite nach erfolgreiche Registierung
                 <LoginGuard>
                   <Register />
                 </LoginGuard>

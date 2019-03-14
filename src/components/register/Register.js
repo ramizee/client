@@ -4,7 +4,6 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
-import "./Register.css"
 
 const FormContainer = styled.div`
   margin-top: 2em;
@@ -74,7 +73,6 @@ class Register extends React.Component {
       username: null,
       name: null,
       birthday: null,
-      exist: false,
       userList: null,
       creationDate: null
     };
@@ -83,18 +81,8 @@ class Register extends React.Component {
    * HTTP POST request is sent to the backend.
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
-  register() {
-    const usernameList = this.state.userList.map(p => p.username);
-    //wenn der username schon benutzt wird, dann bleibt man auf register Seite, kann sich nicht registrieren
-    if (usernameList.includes(this.state.username)) {
-      this.setState({exist: true});
-      this.props.history.push(`/register`);
-      console.log("username already in list");
-    }
-    else { //sonst registriert man sich und schickt Daten
-      console.log("does it work?");
-      //this.props.history.push(`/Login`);
-      fetch(`${getDomain()}/users`, {
+  register() { //schicke die Daten von dem registrierten user
+    fetch(`${getDomain()}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -107,14 +95,15 @@ class Register extends React.Component {
           creationDate: this.getDate()
         })
       })
-        .then(async res=>{
-          if (!res.ok) {
-            const error = await res.json();
-            alert(error.message);
+        .then( response=> response.json())
+        .then( res=>{
+          if (res.error) { //bleibe auf diese Seite bis username unique ist
+            alert(res.message);
             this.setState({name: null});
             this.setState({username: null});
             this.setState({password: null});
             this.setState({birthday: null});
+            this.props.history.push('/register')
           } else{ //nach registrieren kommt man auf login Seite
             this.props.history.push('/login')
           }
@@ -126,7 +115,6 @@ class Register extends React.Component {
             alert(`Something went wrong during the login: ${err.message}`);
           }
         });
-    }
   }
 
   return(){ //go back to the site of login
@@ -176,13 +164,6 @@ class Register extends React.Component {
       <BaseContainer>
         <FormContainer>
           <Form>
-
-            {this.state.exist ? (
-              <p className="UsernameTaken">
-                Username already taken
-              </p>
-            ):null}
-
             <Label>Username</Label>
                         <InputField
               placeholder="Enter here.."

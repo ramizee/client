@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
-import User from "../shared/models/User";
 import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
@@ -36,7 +35,7 @@ class Game extends React.Component {
 
   logout() { //geht zurück zu login Seite wenn man sich abmelden will
     fetch(`${getDomain()}/logout/${localStorage.getItem("user_id")}`, {
-      method: "POST",
+      method: "POST", //schicken, sagen zu server dass er sich ausloggen will, und mach offline
       headers: {
         "Content-Type": "application/json"
       },
@@ -72,7 +71,7 @@ class Game extends React.Component {
         // feel free to remove it :)
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        this.setState({ users });
+        this.setState({ users }); //setState setzt es
       })
       .catch(err => {
         console.log(err);

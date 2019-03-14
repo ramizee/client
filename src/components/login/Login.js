@@ -5,7 +5,6 @@ import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
-import "./Login.css"
 
 const FormContainer = styled.div`
   margin-top: 2em;
@@ -79,8 +78,7 @@ class Login extends React.Component {
       token: null,
       username: null,
       password: null,
-      userList: null,
-      notFound: false
+      userList: null
     };
   }
   /**
@@ -102,15 +100,12 @@ class Login extends React.Component {
       .then(res => {
         if (res.error) { //wenn login nicht ausgeführt wird, bleibt man auf login Seite
           alert(res.message);
-          //console.log("res not ok!");
           this.props.history.push('/login')
         } else { //wenn richtige username und password, dann wird es dem usern ein token und id zugestellt
-          console.log(res);
           const user = new User(res);
-          console.log(user);
           localStorage.setItem("token", user.token);
           localStorage.setItem("user_id", user.id);
-          this.props.history.push('/login')
+          this.props.history.push('/login') //LoginGoard wenn ich Item habe dann geht zu game
         }
       })
       .catch(err => {
@@ -167,11 +162,6 @@ class Login extends React.Component {
       <BaseContainer>
         <FormContainer>
           <Form>
-            {this.state.notFound ? (
-              <p className="WrongLogin">
-                Wrong username or password
-              </p>
-            ):null}
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."
