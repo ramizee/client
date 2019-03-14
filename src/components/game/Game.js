@@ -22,6 +22,7 @@ const PlayerContainer = styled.li`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: ${props => (props.disabled ? "default" : "pointer")};
 `;
 
 class Game extends React.Component {
@@ -32,12 +33,31 @@ class Game extends React.Component {
     };
   }
 
-  logout() {
-    localStorage.removeItem("token");
-    this.props.history.push("/login");
+  logout() { //geht zurück zu login Seite wenn man sich abmelden will
+    fetch(`${getDomain()}/logout/${localStorage.getItem("user_id")}`, {
+      method: "POST", //schicken, sagen zu server dass er sich ausloggen will, und mach offline
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then(response => response.json())
+      .then(res => {
+        if (res.error) {
+          alert(res.message);
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_id")
+          console.log("logging out")
+          this.props.history.push("/login");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
   }
 
-  componentDidMount() {
+  componentDidMount() { //bekomme alle users usernames
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
@@ -51,7 +71,7 @@ class Game extends React.Component {
         // feel free to remove it :)
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        this.setState({ users });
+        this.setState({ users }); //setState setzt es
       })
       .catch(err => {
         console.log(err);
@@ -71,7 +91,11 @@ class Game extends React.Component {
             <Users>
               {this.state.users.map(user => {
                 return (
-                  <PlayerContainer key={user.id}>
+                  <PlayerContainer
+                    key={user.id} onClick={() => { //wenn man auf den user drauf klickt dann sieht man seine profil seite
+                    this.props.history.push(`/profile/${user.id}/show`);
+                  }}
+                  >
                     <Player user={user} />
                   </PlayerContainer>
                 );
