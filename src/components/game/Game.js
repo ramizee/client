@@ -34,7 +34,7 @@ class Game extends React.Component {
     };
   }
 
-  logout() {
+  logout() { //geht zurück zu login Seite wenn man sich abmelden will
     fetch(`${getDomain()}/logout/${localStorage.getItem("user_id")}`, {
       method: "POST",
       headers: {
@@ -58,7 +58,7 @@ class Game extends React.Component {
       });
   }
 
-  componentDidMount() {
+  componentDidMount() { //bekomme alle users usernames
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
@@ -93,7 +93,7 @@ class Game extends React.Component {
               {this.state.users.map(user => {
                 return (
                   <PlayerContainer
-                    key={user.id} onClick={() => {
+                    key={user.id} onClick={() => { //wenn man auf den user drauf klickt dann sieht man seine profil seite
                     this.props.history.push(`/profile/${user.id}/show`);
                   }}
                   >

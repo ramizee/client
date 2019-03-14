@@ -25,19 +25,19 @@ class Profile extends React.Component {
       status: null,
       creationDate: null,
       birthday: null,
-      mine: false
+      mine: false //it is right if you want to show the profile of the user in which you are logged in
     };
   }
 
-  return() {
+  return() { //go back to the site of game with all users
     this.props.history.push("/game");
   }
 
-  change() {
+  change() { //go to the site where you can change your username and birthday
     this.props.history.push(`/profile/change`);
   }
 
-  componentDidMount() {
+  componentDidMount() { //bekomme die Daten von dem user damit ich diese sehen kann
     fetch(`${getDomain()}/users/${this.props.match.params.id}`, {
       method: "GET",
       headers: {
@@ -91,7 +91,7 @@ class Profile extends React.Component {
           </Button>
 
           <Button
-            //show the button only if you are loged in with
+            //show the button only if you are loged in with the current username and change smth just by this username profile
             disabled={!this.state.mine}
             width="40%"
             onClick={() => {

@@ -67,16 +67,13 @@ class Change extends React.Component {
     this.state = {
       username: null,
       birthday: null,
-      newUsername: null,
-      newBirthday: null,
-      userList: null
+      userList: null,
+      exist: false
     };
   }
 
   handleInputChange(key, value) {
-    this.setState({username: value });
-    this.setState({birthday: value });
-    //this.setState({ [key]: value });
+    this.setState({ [key]: value });
   }
 
   /*handleChange(key) {
@@ -85,33 +82,33 @@ class Change extends React.Component {
     };
   }*/
 
-  save() {
+  saveusername() {
     // TODO: check changed username and put on server
     const usernameList = this.state.userList.map(p => p.username);
+    //brauchen userList damit wenn wir den username ändern nicht ein username nehmen der existiert
     if (usernameList.includes(this.state.username)) {
       this.setState({exist: true});
+      //man bleibt auf change Seite da es denn username nicht akzeptiert
       this.props.history.push(`/profile/change`);
       console.log("username already in list");
     }
     else {
-      //this.props.history.push(`/Login`);
+      //sonst übernimmt es die Änderung
       fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          username: this.state.username,
-          birthday: this.state.birthday
+          username: this.state.username
         })
       })
         .then(response => response.json())
-        .then( res=>{
+        .then(res => {
           if (res.error) {
             alert(res.message);
             this.setState({username: null});
-            this.setState({birthday: null});
-          } else{
+          } else { //nach speichern der Änderung geht man zu game Seite
             this.props.history.push('/game')
           }
         })
@@ -123,13 +120,44 @@ class Change extends React.Component {
           }
         });
     }
-  }
+    }
+
+
+    savebirthday() {
+      // TODO: check changed username and put on server
+      fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            birthday: this.state.birthday
+          })
+        })
+          .then(response => response.json())
+          .then( res=>{
+            if (res.error) {
+              alert(res.message);
+              this.setState({birthday: null});
+            } else{ //nach speichern der Änderung geht man zu game Seite
+              this.props.history.push('/game')
+            }
+          })
+          .catch(err => {
+            if (err.message.match(/Failed to fetch/)) {
+              alert("The server cannot be reached. Did you start it?");
+            } else {
+              alert(`Something went wrong during the login: ${err.message}`);
+            }
+          });
+      }
+
 
   return(){ //go back to the site of game when we dont want to change
     this.props.history.push(`/game`);
   }
 
-  componentDidMount() {
+  componentDidMount() { //brauche die userList
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
@@ -159,6 +187,18 @@ class Change extends React.Component {
               }}
             />
 
+            <ButtonContainer>
+              <Button
+                disabled={!this.state.username}
+                width="50%"
+                onClick={() => {
+                  this.saveusername();
+                }}
+              >
+                Save Username
+              </Button>
+            </ButtonContainer>
+
             <Label>New Birthday</Label>
             <InputField
               placeholder="Enter your new birthday here.."
@@ -168,13 +208,13 @@ class Change extends React.Component {
             />
             <ButtonContainer>
               <Button
-                disabled={!this.state.username || !this.state.birthday}
+                disabled={!this.state.birthday}
                 width="50%"
                 onClick={() => {
-                  this.save();
+                  this.savebirthday();
                 }}
               >
-                Save
+                Save Birthday
               </Button>
             </ButtonContainer>
             <ButtonContainer>

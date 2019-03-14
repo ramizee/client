@@ -85,12 +85,13 @@ class Register extends React.Component {
    */
   register() {
     const usernameList = this.state.userList.map(p => p.username);
+    //wenn der username schon benutzt wird, dann bleibt man auf register Seite, kann sich nicht registrieren
     if (usernameList.includes(this.state.username)) {
       this.setState({exist: true});
       this.props.history.push(`/register`);
       console.log("username already in list");
     }
-    else {
+    else { //sonst registriert man sich und schickt Daten
       console.log("does it work?");
       //this.props.history.push(`/Login`);
       fetch(`${getDomain()}/users`, {
@@ -114,7 +115,7 @@ class Register extends React.Component {
             this.setState({username: null});
             this.setState({password: null});
             this.setState({birthday: null});
-          } else{
+          } else{ //nach registrieren kommt man auf login Seite
             this.props.history.push('/login')
           }
         })
@@ -131,6 +132,11 @@ class Register extends React.Component {
   return(){ //go back to the site of login
     this.props.history.push("/login");
   }
+
+  getDate(){
+    return new Date().toLocaleString();
+  }
+
   /**
    *  Every time the user enters something in the input field, the state gets updated.
    * @param key (the key of the state for identifying the field that needs to be updated)
@@ -148,7 +154,7 @@ class Register extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {
+  componentDidMount() { //bekomme Daten um zu checken ob username schon benutzt wird
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {

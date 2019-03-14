@@ -87,24 +87,24 @@ class Login extends React.Component {
    * HTTP POST request is sent to the backend.
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
-  login() {
+  login() { //man logt sich ein und schickt die Daten zu dbs
     fetch(`${getDomain()}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
+      body: JSON.stringify({ //nur mit username und password einloggen
         username: this.state.username,
         password: this.state.password
       })
     })
       .then(response => response.json())
       .then(res => {
-        if (res.error) {
+        if (res.error) { //wenn login nicht ausgeführt wird, bleibt man auf login Seite
           alert(res.message);
           //console.log("res not ok!");
           this.props.history.push('/login')
-        } else {
+        } else { //wenn richtige username und password, dann wird es dem usern ein token und id zugestellt
           console.log(res);
           const user = new User(res);
           console.log(user);
@@ -144,7 +144,7 @@ class Login extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {
+  componentDidMount() { //bekommt die Daten um zu überprüfen ob mit richtige Daten angemeldet ist
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
